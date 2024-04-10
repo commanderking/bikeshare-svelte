@@ -1,35 +1,19 @@
 <script lang="ts">
 	import * as Plot from '@observablehq/plot';
-
-	export let getQuery;
-
+	import { type GetQuery } from '$lib/types/queries';
 	import { onMount } from 'svelte';
-
-	let data = [];
+	import type { RawTableRow, Day } from './types';
+	import { tripsByDayQuery } from './constants';
+	export let getQuery: GetQuery;
 	let container: HTMLDivElement;
 
+	let tripsData = [];
+
 	onMount(async () => {
-		console.log('mounting');
-
-		const tripsByDayQuery = `
-            SELECT
-            DAYOFWEEK(start_time) as day,
-            DAYNAME(start_time) as dayname,
-            COUNT(*) as trips
-            FROM
-                parquet_scan('all_trips.parquet')
-            WHERE
-                strftime('%Y', start_time) = '2023'
-            GROUP BY
-                day, dayname
-            ORDER BY
-                day ASC;
-        `;
-
 		const table = await getQuery(tripsByDayQuery);
 		const table_arr = table.toArray(); // list of objects, compatible with OJS
 
-		const trips_data = table_arr.map((row) => {
+		const tripsData = table_arr.map((row: RawTableRow) => {
 			return {
 				dayIndex: Number(row.day),
 				dayName: row.dayname,
@@ -37,25 +21,21 @@
 			};
 		});
 
-		console.log({ trips_data });
-
-		data = trips_data;
-
 		const plot = Plot.plot({
 			marginLeft: 90,
 			y: { label: null },
 			marks: [
-				Plot.barX(data, {
+				Plot.barX(tripsData, {
 					x: 'trips',
 					y: 'dayName',
 					sort: {
 						y: 'data',
-						reduce: ([row]) => {
+						reduce: ([row]: Day[]) => {
 							return row.dayIndex;
 						}
 					}
 				}),
-				Plot.text(data, {
+				Plot.text(tripsData, {
 					text: (d) => d.trips,
 					x: 'trips',
 					y: 'dayName',
@@ -70,7 +50,7 @@
 	});
 </script>
 
-{#if data.length === 0}
+{#if tripsData.length === 0}
 	<div>Loading Bar Data</div>
 {/if}
 <div bind:this={container} />
