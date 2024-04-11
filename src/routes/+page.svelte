@@ -1,6 +1,7 @@
 <script lang="ts">
 	import TripsByDayChart from '$lib/features/tripsByDay/TripsByDayChart.svelte';
-
+	import TripsByYearChart from '$lib/features/tripsByYear/Chart.svelte';
+	import TripsByHour from '$lib/features/tripsByHour/Chart.svelte';
 	export let data;
 </script>
 
@@ -8,3 +9,5 @@
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 
 <TripsByDayChart getQuery={data.getQuery} />
+<TripsByYearChart getQuery={data.getQuery} />
+<TripsByHour getQuery={data.getQuery} />
