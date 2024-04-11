@@ -2,46 +2,49 @@
 	import * as Plot from '@observablehq/plot';
 	import { type GetQuery } from '$lib/types/queries';
 	import { onMount } from 'svelte';
-	import type { RawTableRow, Day } from './types';
-	import { tripsByDayQuery } from './constants';
+	import type { RawTableRow, Year } from './types';
+	import { yearlyRidesQuery } from './constants';
+
 	export let getQuery: GetQuery;
 	let container: HTMLDivElement;
 
+	let tripsData = [];
 	let isLoading = true;
 
 	onMount(async () => {
-		const table = await getQuery(tripsByDayQuery);
+		const table = await getQuery(yearlyRidesQuery);
 		const table_arr = table.toArray(); // list of objects, compatible with OJS
 
 		const tripsData = table_arr.map((row: RawTableRow) => {
 			return {
-				dayIndex: Number(row.day),
-				dayName: row.dayname,
+				year: row.year,
 				trips: Number(row.trips)
 			};
 		});
 
 		const plot = Plot.plot({
 			marginLeft: 90,
-			y: { label: null },
+			y: { grid: true },
 			marks: [
-				Plot.barX(tripsData, {
-					x: 'trips',
-					y: 'dayName',
+				Plot.barY(tripsData, {
+					x: 'year',
+					y: 'trips',
 					sort: {
-						y: 'data',
-						reduce: ([row]: Day[]) => {
-							return row.dayIndex;
+						x: 'data',
+						reduce: ([row]: Year[]) => {
+							return row.year;
 						}
 					}
 				}),
 				Plot.text(tripsData, {
 					text: (d) => d.trips,
-					x: 'trips',
-					y: 'dayName',
+					x: 'year',
+					y: 'trips',
 					textAnchor: 'end',
-					dx: -3,
-					fill: 'white'
+					fill: 'black',
+					dy: -6,
+					dx: 22,
+					lineAnchor: 'bottom'
 				})
 			]
 		});
