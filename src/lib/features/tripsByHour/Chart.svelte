@@ -39,7 +39,7 @@
 					y: 'trips',
 					sort: {
 						x: 'data',
-						reduce: ([row]: [{ hour: number; trips: number }]) => {
+						reduce: ([row]: { hour: number; trips: number }[]) => {
 							return row.hour;
 						}
 					}
