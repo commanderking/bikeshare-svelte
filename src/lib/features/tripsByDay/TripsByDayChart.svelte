@@ -10,6 +10,7 @@
 	let isLoading = true;
 
 	onMount(async () => {
+		console.log({ getQuery });
 		const table = await getQuery(tripsByDayQuery);
 		const table_arr = table.toArray(); // list of objects, compatible with OJS
 
