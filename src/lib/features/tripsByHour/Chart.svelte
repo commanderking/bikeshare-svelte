@@ -20,10 +20,9 @@
 	let isLoading = true;
 
 	onMount(async () => {
-		const table = await getQuery(query);
-		const tableArray = table.toArray(); // list of objects, compatible with OJS
+		const data = await getQuery(query);
 
-		const tripsData = tableArray.map((row: { hour: BigInt; trips: BigInt }) => {
+		const tripsData = data.map((row: { hour: BigInt; trips: BigInt }) => {
 			return {
 				hour: Number(row.hour),
 				trips: Number(row.trips)
@@ -39,7 +38,7 @@
 					y: 'trips',
 					sort: {
 						x: 'data',
-						reduce: ([row]: [{ hour: number; trips: number }]) => {
+						reduce: ([row]: { hour: number; trips: number }[]) => {
 							return row.hour;
 						}
 					}
