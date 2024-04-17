@@ -11,10 +11,9 @@
 
 	onMount(async () => {
 		console.log({ getQuery });
-		const table = await getQuery(tripsByDayQuery);
-		const table_arr = table.toArray(); // list of objects, compatible with OJS
+		const data = await getQuery(tripsByDayQuery);
 
-		const tripsData = table_arr.map((row: RawTableRow) => {
+		const tripsData = data.map((row: RawTableRow) => {
 			return {
 				dayIndex: Number(row.day),
 				dayName: row.dayname,
