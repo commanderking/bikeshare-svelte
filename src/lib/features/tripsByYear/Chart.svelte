@@ -7,15 +7,12 @@
 
 	export let getQuery: GetQuery;
 	let container: HTMLDivElement;
-
-	let tripsData = [];
 	let isLoading = true;
 
 	onMount(async () => {
-		const table = await getQuery(yearlyRidesQuery);
-		const table_arr = table.toArray(); // list of objects, compatible with OJS
+		const data = await getQuery(yearlyRidesQuery);
 
-		const tripsData = table_arr.map((row: RawTableRow) => {
+		const tripsData = data.map((row: RawTableRow) => {
 			return {
 				year: row.year,
 				trips: Number(row.trips)
