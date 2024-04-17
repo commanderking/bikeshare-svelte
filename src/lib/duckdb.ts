@@ -1,9 +1,5 @@
 import * as duckdb from '@duckdb/duckdb-wasm';
-
 import duckdb_wasm from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
-
-// import shell_wasm from '@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url';
-
 import type { AsyncDuckDB } from '@duckdb/duckdb-wasm';
 
 const DUCKDB_BUNDLES: duckdb.DuckDBBundles = {
