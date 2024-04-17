@@ -1,19 +1,9 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import preprocess from 'svelte-preprocess';
+import { defineConfig } from 'vitest/config';
 
-/** @type {import('vite').UserConfig} */
-const config = {
+export default defineConfig({
 	plugins: [sveltekit()],
-	preprocess: preprocess(),
-	kit: {
-		paths: {
-			base: '/sveltekit-typescript'
-		},
-		prerender: {
-			default: true
-		},
-		appDir: 'internal' // For github pages: https://www.npmjs.com/package/@sveltejs/adapter-static/v/next
+	test: {
+		include: ['src/**/*.{test,spec}.{js,ts}']
 	}
-};
-
-export default config;
+});

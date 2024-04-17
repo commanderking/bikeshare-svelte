@@ -18,15 +18,12 @@
 	onMount(async () => {
 		const parquetUrl = new URL('local/all_trips.parquet', window.location.origin).href;
 
-		// SELECT start_time, stop_time FROM all_trips.parquet LIMIT 100;
 		await shell.embed({
 			shellModule: shell_wasm,
 			container: shellContainer,
 			resolveDatabase: async (props) => {
 				const db = await initDB();
 				await db.registerFileURL('all_trips.parquet', parquetUrl, 4, false);
-				// connectionPromise = db.connect(); // Open a connection (promise)
-
 				return db;
 			}
 		});
@@ -37,14 +34,11 @@
 		const loadQueryDb = async () => {
 			console.log('loading db');
 			if (connectionPromise) {
-				return connectionPromise; // Return existing promise, if any
+				return connectionPromise;
 			}
-
-			// Initialize database
 			const db = await initDB();
 			await db.registerFileURL('all_trips.parquet', parquetUrl, 4, false);
-			connectionPromise = db.connect(); // Open a connection (promise)
-
+			connectionPromise = db.connect();
 			return connectionPromise;
 		};
 
