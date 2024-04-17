@@ -1,17 +1,6 @@
-// Based off this example for using DuckDB-Wasm with SvelteKit:
-// https://github.com/duckdb-wasm-examples/sveltekit-typescript
-
-// I think this code needs to be kept apart from the App.svelte to function?
-// Either way, it's neater to keep the worker and logger imports separate from everything else
-
 import * as duckdb from '@duckdb/duckdb-wasm';
 
 import duckdb_wasm from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
-import duckdb_wasm_eh from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
-
-import duckdb_worker from '/node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?worker';
-
-import shell_wasm from '@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url';
 
 // import shell_wasm from '@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url';
 
@@ -25,6 +14,7 @@ const DUCKDB_BUNDLES: duckdb.DuckDBBundles = {
 			import.meta.url
 		).toString()
 	}
+	// There are import issues that I have yet to resolve - likely due to vite and how it imports these workers
 	// eh: {
 	// 	mainModule: duckdb_wasm_eh,
 	// 	mainWorker: new URL(
@@ -35,12 +25,9 @@ const DUCKDB_BUNDLES: duckdb.DuckDBBundles = {
 };
 
 let db: AsyncDuckDB | null = null;
-let shell;
 const initDB = async () => {
-	// vite can't handle commonjs module
-	shell = (await import('@duckdb/duckdb-wasm-shell')).default;
 	if (db) {
-		return db; // Return existing database, if any
+		return db;
 	}
 
 	const bundle = await duckdb.selectBundle(DUCKDB_BUNDLES);
@@ -55,4 +42,4 @@ const initDB = async () => {
 	return db;
 };
 
-export { initDB }; // so we can import this elsewhere
+export { initDB };
