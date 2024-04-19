@@ -10,7 +10,6 @@
 	let isLoading = true;
 
 	onMount(async () => {
-		console.log({ getQuery });
 		const data = await getQuery(tripsByDayQuery);
 
 		const tripsData = data.map((row: RawTableRow) => {
