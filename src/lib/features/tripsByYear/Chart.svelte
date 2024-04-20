@@ -46,7 +46,7 @@
 			]
 		});
 
-		container.append(plot); // Append the plot to our container
+		container.append(plot);
 		isLoading = false;
 	});
 </script>
