@@ -14,10 +14,8 @@
 
 	onMount(async () => {
 		const parquetUrl = new URL('local/all_trips.parquet', window.location.origin).href;
-
 		let connectionPromise: Promise<AsyncDuckDBConnection> | null;
 
-		// For now, initiate separate db for querying. Otherwise, querying here will block the terminal
 		const loadQueryDb = async () => {
 			console.log('loading db');
 			if (connectionPromise) {
