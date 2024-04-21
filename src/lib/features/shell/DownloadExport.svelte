@@ -3,7 +3,6 @@
 
 	export let connectionPromise: Promise<AsyncDuckDBConnection> | null;
 	export let db: AsyncDuckDB;
-	let linkHtml: HTMLAnchorElement;
 	type Link = { href: string; fileName: string };
 	$: links = [] as Link[];
 	let handleQuerySubmit: (event: SubmitEvent) => Promise<void>;
@@ -22,24 +21,13 @@
 		const formData = new FormData(event.target as HTMLFormElement);
 
 		const query = formData.get('query');
-		console.log({ query });
-
-		console.log({ conn });
-
 		if (conn) {
 			const fileName = `blueBikes_${new Date().toISOString().slice(0, 10)}_${Date.now()}.parquet`;
 
 			const copyQuery = `COPY (${query}) TO '${fileName}' (FORMAT 'parquet');`;
-			console.log({ copyQuery });
-
-			console.log('after send');
-
 			const parquet_buffer = await db.copyFileToBuffer(fileName);
 			const filePath = URL.createObjectURL(new Blob([parquet_buffer]));
-
 			links = [...links, { href: filePath, fileName }];
-
-			linkHtml.href = filePath;
 
 			await db.dropFile(fileName);
 			await conn.close();
