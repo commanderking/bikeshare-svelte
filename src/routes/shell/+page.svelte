@@ -5,13 +5,17 @@
 	import shell_wasm from '@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url';
 	import * as shell from '@duckdb/duckdb-wasm-shell';
 	import { initDB } from '$lib/duckdb';
-	import type { AsyncDuckDBConnection } from '@duckdb/duckdb-wasm';
+	import { AsyncDuckDB, AsyncDuckDBConnection } from '@duckdb/duckdb-wasm';
 
 	let shellContainer: HTMLDivElement;
-	let handleQuerySubmit: (event: SubmitEvent) => Promise<void>;
 	let connectionPromise: Promise<AsyncDuckDBConnection> | null;
-	let linkHtml: HTMLAnchorElement;
-	const link = null;
+	type Link = { href: string; fileName: string };
+
+	let db: AsyncDuckDB;
+
+	$: links = [] as Link[];
+
+	console.log({ links });
 
 	const yearlRidesQuery = `
         SELECT
@@ -35,28 +39,9 @@
 			container: shellContainer,
 
 			resolveDatabase: async () => {
-				const db = await initDB();
+				db = await initDB();
 				await db.registerFileURL('all_trips.parquet', parquetUrl, 4, false);
 				connectionPromise = db.connect();
-
-				handleQuerySubmit = async (event: SubmitEvent) => {
-					const conn = await connectionPromise;
-
-					if (conn) {
-						const fileName = `blueBikes_${new Date().toISOString().slice(0, 10)}`;
-						await conn.send(
-							`COPY (SELECT * FROM all_trips.parquet LIMIT 100) TO '${fileName}' (FORMAT 'parquet');`
-						);
-
-						const parquet_buffer = await db.copyFileToBuffer(fileName);
-						const filePath = URL.createObjectURL(new Blob([parquet_buffer]));
-
-						linkHtml.href = filePath;
-
-						await conn.close();
-					}
-				};
-
 				return db;
 			}
 		});
@@ -67,7 +52,7 @@
 	<h1>Investigate Every Bluebike Trip since May, 2018!</h1>
 	<p>
 		In the <a href="#shellHeader">terminal</a> below, you can run SQL queries on every single Boston
-		Bluebike trip since May, 2018. All queres are run through
+		Bluebike trip since May, 2018. All queries are run through
 		<a target="_blank" href="https://duckdb.org/2021/10/29/duckdb-wasm">DuckDB-Wasm</a>, an in
 		browser database that you can query with SQL. For example, to query the number of trips in May,
 		2023, copy and paste the following into the shell:
@@ -75,21 +60,21 @@
 	<pre>{format(yearlRidesQuery, { language: 'mysql' })}</pre>
 
 	<h3>Data Characteristics</h3>
-	<p>The all_trips.parquet file has been registered with duckdb so you can query it directly.</p>
-	<p>For a description of all possible columns, run:</p>
+	<p>
+		The all_trips.parquet file, which contains the data for all trips, has been registered with
+		duckdb so you can query it directly. For a description of all possible columns that you can
+		grab, run:
+	</p>
 	<pre>{describeQuery}</pre>
 
-	<h3>Export your data</h3>
 	<p>
-		Have a query whose data you'd like to export? Submit the query here nd we'll create a parquet
-		file to download.
+		If you wish to download the parquet file to do your own analysis locally, you can do so <a
+			href="./local/all_trips.parquet"
+			target="_blank"
+			download="all_bluebike_trips.parquet">here</a
+		>.
 	</p>
-	<form on:submit|preventDefault={handleQuerySubmit}>
-		<label for="query">Query</label>
-		<input type="text" id="fname" name="query" value="" />
-		<input type="submit" value="Submit" />
-	</form>
-	<a download="results.parquet" href={link} bind:this={linkHtml}>Download</a>
+
 	<h1 id="shellHeader">Terminal</h1>
 	<div class="shellContainer"><div id="shell" bind:this={shellContainer} /></div>
 </div>
