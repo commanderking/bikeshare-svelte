@@ -3,10 +3,14 @@
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const url =
 	'https://city-bike-share.s3.ap-southeast-2.amazonaws.com/all_trips_february_2024.parquet';
-const outputPath = path.join('./static/local', 'all_trips.parquet');
+const outputPath = path.join(__dirname, '../static/local', 'all_trips.parquet');
 
 const downloadFile = async () => {
 	try {
