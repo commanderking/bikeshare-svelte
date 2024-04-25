@@ -1,14 +1,9 @@
 <script lang="ts">
 	import { format } from 'sql-formatter';
-	import { onMount } from 'svelte';
 	import 'xterm/css/xterm.css';
-	import shell_wasm from '@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url';
-	import * as shell from '@duckdb/duckdb-wasm-shell';
-	import { initDB } from '$lib/duckdb';
 	import { AsyncDuckDB, AsyncDuckDBConnection } from '@duckdb/duckdb-wasm';
 
-	let shellContainer: HTMLDivElement;
-	let connectionPromise: Promise<AsyncDuckDBConnection> | null;
+	import ShellContainer from '$lib/features/shell/ShellContainer.svelte';
 	type Link = { href: string; fileName: string };
 
 	let db: AsyncDuckDB;
@@ -30,22 +25,6 @@
     `;
 
 	const describeQuery = `DESCRIBE SELECT * FROM all_trips.parquet;`;
-
-	onMount(async () => {
-		const parquetUrl = new URL('local/all_trips.parquet', window.location.origin).href;
-
-		await shell.embed({
-			shellModule: shell_wasm,
-			container: shellContainer,
-
-			resolveDatabase: async () => {
-				db = await initDB();
-				await db.registerFileURL('all_trips.parquet', parquetUrl, 4, false);
-				connectionPromise = db.connect();
-				return db;
-			}
-		});
-	});
 </script>
 
 <div class="pageContainer">
@@ -74,9 +53,9 @@
 			download="all_bluebike_trips.parquet">here</a
 		>.
 	</p>
-
-	<h1 id="shellHeader">Terminal</h1>
-	<div class="shellContainer"><div id="shell" bind:this={shellContainer} /></div>
+	<div>
+		<ShellContainer />
+	</div>
 </div>
 
 <style>
@@ -84,12 +63,6 @@
 		width: 70%;
 		margin: auto;
 		font-size: 20px;
-	}
-	.shellContainer {
-		width: '50%';
-		overflow: 'scroll';
-		padding: 16px 0 0 20px;
-		background-color: #333;
 	}
 
 	pre {
