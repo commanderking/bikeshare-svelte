@@ -13,13 +13,7 @@
 	let db: AsyncDuckDB;
 
 	onMount(async () => {
-		console.log({ dev });
-
-		const parquetUrl = dev
-			? new URL('local/all_trips.parquet', window.location.origin).href
-			: 'https://city-bike-share.s3.ap-southeast-2.amazonaws.com/all_trips.parquet';
-
-		console.log({ parquetUrl });
+		const parquetUrl = new URL('local/all_trips.parquet', window.location.origin).href;
 		await shell.embed({
 			shellModule: shell_wasm,
 			container: shellContainer,
